@@ -8,8 +8,6 @@ import com.intellij.util.text.VersionComparatorUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Utils {
@@ -17,29 +15,6 @@ public class Utils {
     public static String getPluginVersion(String id) {
         IdeaPluginDescriptor desc = PluginManager.getPlugin(PluginId.getId(id));
         return desc == null ? "" : desc.getVersion();
-    }
-
-    /**
-     * Convert time string in the format {@code EEE, dd MMM yyyy HH:mm:ss z}
-     * to the UNIX timestamp.
-     *
-     * @param text Timestamp string.
-     * @return the number of milliseconds since January 1, 1970, 00:00:00 GMT.
-     */
-    public static long timestampToTime(@Nullable final String text) {
-        if (text == null)
-            return 0;
-
-        final SimpleDateFormat format = new SimpleDateFormat(
-            "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
-
-        try {
-            return format.parse(text).getTime();
-        }
-        catch (ParseException e) {
-            e.printStackTrace();
-            return 0;
-        }
     }
 
     public static void sortVersions(@NotNull final List<String> versions) {

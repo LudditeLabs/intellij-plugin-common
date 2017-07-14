@@ -9,6 +9,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.util.Ref;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.io.HttpRequests;
+import com.ludditelabs.intellij.common.DateUtils;
 import com.ludditelabs.intellij.common.DownloadUtils;
 import com.ludditelabs.intellij.common.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -17,8 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class MetadataDownloader {
@@ -55,7 +54,7 @@ public class MetadataDownloader {
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("HEAD");
         String last = con.getHeaderField("Last-Modified");
-        long remote_date = Utils.timestampToTime(last);
+        long remote_date = DateUtils.timestampToTime(last);
         return remote_date == 0 || remote_date > local_meta.lastModified;
     }
 
@@ -123,7 +122,7 @@ public class MetadataDownloader {
     private BundleMetadata createMetadata(JsonObject json, String pluginVersion,
                                           String lastModified) {
         BundleMetadata meta = new BundleMetadata();
-        meta.lastModified = Utils.timestampToTime(lastModified);
+        meta.lastModified = DateUtils.timestampToTime(lastModified);
         meta.dist = json.get("dist").getAsString();
         meta.message = json.get("message").getAsString();
         meta.version = json.get("version").getAsString();
