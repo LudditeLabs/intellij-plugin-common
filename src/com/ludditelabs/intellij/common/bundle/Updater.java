@@ -255,11 +255,8 @@ public class Updater {
                 try {
                     doDownloadMetadata(consumer, checkLastModified);
                 }
-                catch (ConnectException e) {
-                    logger.debug(e);
-                }
                 catch (IOException e) {
-                    logger.error(e);
+                    logger.debug(e);
                 }
             }
         });
