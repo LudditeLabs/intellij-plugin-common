@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.net.ConnectException;
 
 /**
  * This class implements platform bundle download workflow.
@@ -253,6 +254,9 @@ public class Updater {
             public void run() {
                 try {
                     doDownloadMetadata(consumer, checkLastModified);
+                }
+                catch (ConnectException e) {
+                    logger.debug(e);
                 }
                 catch (IOException e) {
                     logger.error(e);
