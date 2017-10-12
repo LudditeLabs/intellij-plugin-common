@@ -77,8 +77,7 @@ public class Utils {
      * Get current platform architecture.
      */
     public static String getArch() {
-        // NOTE: we support only x32 binaries for windows (for now).
-        if (SystemInfo.is64Bit && !SystemInfo.isWindows)
+        if (SystemInfo.is64Bit)
             return "64bit";
         else
             return "32bit";
