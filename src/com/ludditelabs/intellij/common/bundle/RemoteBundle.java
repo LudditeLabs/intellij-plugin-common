@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 public class RemoteBundle extends Bundle {
     protected static final Logger logger = Logger.getInstance("ludditelabs.bundle");
 
+    private String m_arch = "64bit";
     private String m_baseUrl;
     private String m_metadataUrl = null;
 
@@ -54,9 +55,9 @@ public class RemoteBundle extends Bundle {
     // Helper method to construct metadata file name
     // based on current runtime environment.
     // See also s3bundle repo: https://bitbucket.org/ludditelabs/s3bundle.
-    private static String getMetadataName() {
-        return String.format("%s/%s/meta.json",
-            Utils.getPlatform(), Utils.getArch());
+    // NOTE: Only 64bit arch is supported.
+    private String getMetadataName() {
+        return String.format("%s/%s/meta.json", Utils.getPlatform(), m_arch);
     }
 
     /** Base URL for the bundle .*/
@@ -67,5 +68,13 @@ public class RemoteBundle extends Bundle {
     /** Metadata URL .*/
     public String getMetadataUrl() {
         return m_metadataUrl;
+    }
+
+    public String getArch() {
+        return m_arch;
+    }
+
+    public void setArch(String arch) {
+        m_arch = arch;
     }
 }

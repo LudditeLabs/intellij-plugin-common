@@ -49,10 +49,11 @@ public class PackageDownloader {
         // NOTE: We don't put '/' between <base> and <platform> because
         // <base> already has it.
         else {
+            RemoteBundle bundle = m_updater.getRemoteBundle();
             url = String.format("%s%s/%s/%s/%s",
-                m_updater.getRemoteBundle().getBaseUrl(),
+                bundle.getBaseUrl(),
                 Utils.getPlatform(),
-                Utils.getArch(),
+                bundle.getArch(),
                 m_metadata.pluginVersion,
                 m_metadata.dist);
         }
