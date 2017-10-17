@@ -1,16 +1,27 @@
 package com.ludditelabs.intellij.common;
 
+import com.intellij.execution.ExecutionException;
+import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.execution.process.CapturingProcessHandler;
+import com.intellij.execution.process.ProcessOutput;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.SystemInfo;
+import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.util.text.VersionComparatorUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 public class Utils {
+    private static final Logger LOG = Logger.getInstance("com.ludditelabs.common.Utils");
+
     @NotNull
     public static String getPluginVersion(String id) {
         IdeaPluginDescriptor desc = PluginManager.getPlugin(PluginId.getId(id));
@@ -69,17 +80,39 @@ public class Utils {
         else if (SystemInfo.isLinux)
             return "linux";
         else if (SystemInfo.isWindows)
-            return "win";
+            return "windows";
         return "unsupported";
     }
 
-    /**
-     * Get current platform architecture.
-     */
-    public static String getArch() {
-        if (SystemInfo.is64Bit)
-            return "64bit";
-        else
-            return "32bit";
+    public static ProcessOutput runProcess(String executable, String... parameters) {
+        LOG.debug("Run process:", executable);
+
+        try {
+            GeneralCommandLine cmd = new GeneralCommandLine();
+            cmd.setExePath(executable);
+            cmd.addParameters(parameters);
+            CapturingProcessHandler handler = new CapturingProcessHandler(
+                cmd.withCharset(CharsetToolkit.getDefaultSystemCharset()));
+            return handler.runProcess(60 * 1000);
+        }
+        catch (ExecutionException e) {
+            LOG.info(e);
+        }
+
+        return null;
+    }
+
+    public static ProcessOutput runCheckedProcess(String executable, String... parameters) {
+        ProcessOutput out = runProcess(executable, parameters);
+        if (out != null) {
+            if (out.isCancelled()) {
+                LOG.info("Run process: CANCELED.");
+                return null;
+            }
+            else if (!out.checkSuccess(LOG)) {
+                return null;
+            }
+        }
+        return out;
     }
 }
