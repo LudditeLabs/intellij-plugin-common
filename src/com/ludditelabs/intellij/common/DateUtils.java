@@ -14,12 +14,12 @@ import java.util.TimeZone;
  * This class provides various date utils.
  */
 public class DateUtils {
-    private static final TimeZone m_utcTz = TimeZone.getTimeZone("UTC");
+    private static final TimeZone UTC_TZ = TimeZone.getTimeZone("UTC");
 
     @NotNull
     private static SimpleDateFormat getUtcDateFormat() {
         SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-        fmt.setTimeZone(m_utcTz);
+        fmt.setTimeZone(UTC_TZ);
         return fmt;
     }
 
@@ -31,7 +31,7 @@ public class DateUtils {
     @NotNull
     public static Date utcDateNow() {
         Calendar cal = Calendar.getInstance();
-        cal.setTimeZone(m_utcTz);
+        cal.setTimeZone(UTC_TZ);
         cal.setTime(new Date());
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
@@ -50,7 +50,7 @@ public class DateUtils {
     @NotNull
     public static Date addDays(@NotNull Date date, int days) {
         Calendar cal = Calendar.getInstance();
-        cal.setTimeZone(m_utcTz);
+        cal.setTimeZone(UTC_TZ);
         cal.setTime(date);
         cal.add(Calendar.DAY_OF_MONTH, days);
         return cal.getTime();
