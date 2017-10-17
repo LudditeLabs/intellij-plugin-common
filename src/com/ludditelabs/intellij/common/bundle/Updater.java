@@ -51,8 +51,8 @@ public class Updater {
 
     protected static final Logger logger = Logger.getInstance("ludditelabs.bundle.Updater");
     @NotNull private final String m_pluginVersion;
-    @NotNull private RemoteBundle m_remoteBundle;
-    @NotNull private LocalBundle m_localBundle;
+    @NotNull private final RemoteBundle m_remoteBundle;
+    @NotNull private final LocalBundle m_localBundle;
     private boolean m_busy = false;
 
     /**
