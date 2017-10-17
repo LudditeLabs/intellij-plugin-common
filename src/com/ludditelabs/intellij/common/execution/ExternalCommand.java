@@ -23,6 +23,8 @@ import java.util.Collection;
  * It's also possible to subscribe on various events.
  */
 public class ExternalCommand {
+    protected static final Logger LOG = Logger.getInstance(ExternalCommand.class);
+
     private final GeneralCommandLine m_cmd;
     private final Project m_project;
     private String m_title = "shell command";
@@ -142,8 +144,7 @@ public class ExternalCommand {
      * @throws ExecutionException
      */
     public void execute() throws ExecutionException {
-        Logger.getInstance(getClass()).assertTrue(
-            m_processHandler == null,
+        LOG.assertTrue(m_processHandler == null,
             "Process has already run with this instance.");
 
         m_processHandler = new KillableColoredProcessHandler(m_cmd);

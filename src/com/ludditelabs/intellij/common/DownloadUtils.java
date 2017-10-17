@@ -14,7 +14,7 @@ import java.util.Locale;
 
 // Inspired by com.intellij.platform.templates.github.DownloadUtil
 public class DownloadUtils {
-    private static final Logger logger = Logger.getInstance("ludditelabs.common.DownloadUtils");
+    private static final Logger LOG = Logger.getInstance("ludditelabs.common.DownloadUtils");
 
     private static String sizeToString(int size) {
         if (size < 0) {
@@ -76,7 +76,7 @@ public class DownloadUtils {
                             extraProcessor.process(request);
                     }
                     catch (IOException e) {
-                        logger.debug(e);
+                        LOG.debug(e);
                         HttpURLConnection conn = (HttpURLConnection)request.getConnection();
 
                         String msg = (errorMessage == null || errorMessage.isEmpty() ? "" : errorMessage + ": ") +

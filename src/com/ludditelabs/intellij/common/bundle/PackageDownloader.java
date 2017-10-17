@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 public class PackageDownloader {
-    protected static final Logger logger = Logger.getInstance("ludditelabs.bundle.PackageDownloader");
+    protected static final Logger LOG = Logger.getInstance("ludditelabs.bundle.PackageDownloader");
 
     @NotNull private final Updater m_updater;
     @NotNull private final BundleMetadata m_metadata;
@@ -64,7 +64,7 @@ public class PackageDownloader {
         final File file = getTempFilename();
         final String filename = file.getAbsolutePath();
 
-        logger.debug("Downloading ", url, " -> ",filename);
+        LOG.debug("Downloading ", url, " -> ",filename);
 
         DownloadUtils.downloadToFile(
             url, file, m_indicator, "Can't download file");
@@ -76,12 +76,12 @@ public class PackageDownloader {
         File zip_file = new File(fileName);
         File out_dir = new File(outPath);
 
-        logger.debug("Unpacking ", fileName, " -> ", outPath);
+        LOG.debug("Unpacking ", fileName, " -> ", outPath);
 
         ZipUtils.unzipAtomic(zip_file, out_dir, m_indicator);
 
         File meta_file = Paths.get(outPath, "metadata.json").toFile();
-        logger.debug("Saving ", meta_file.getAbsolutePath());
+        LOG.debug("Saving ", meta_file.getAbsolutePath());
 
         try (FileWriter writer = new FileWriter(meta_file)) {
             Gson gson = new Gson();

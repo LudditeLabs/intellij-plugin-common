@@ -21,7 +21,7 @@ import java.net.URL;
 import java.util.*;
 
 public class MetadataDownloader {
-    protected static final Logger logger = Logger.getInstance("ludditelabs.bundle.MetadataDownloader");
+    protected static final Logger LOG = Logger.getInstance("ludditelabs.bundle.MetadataDownloader");
 
     @NotNull private final Updater m_updater;
     @Nullable private final ProgressIndicator m_indicator;
@@ -68,7 +68,7 @@ public class MetadataDownloader {
 
         String url = bundle.getMetadataUrl();
 
-        logger.debug("Downloading ", url);
+        LOG.debug("Downloading ", url);
 
         try {
             m_updater.setBusy(true);

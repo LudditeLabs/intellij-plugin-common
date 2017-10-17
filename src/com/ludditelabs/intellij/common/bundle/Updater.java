@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.net.ConnectException;
 
 /**
  * This class implements platform bundle download workflow.
@@ -49,7 +48,7 @@ public class Updater {
         void unpacked();
     }
 
-    protected static final Logger logger = Logger.getInstance("ludditelabs.bundle.Updater");
+    protected static final Logger LOG = Logger.getInstance("ludditelabs.bundle.Updater");
     @NotNull private final String m_pluginVersion;
     @NotNull private final RemoteBundle m_remoteBundle;
     @NotNull private final LocalBundle m_localBundle;
@@ -256,7 +255,7 @@ public class Updater {
                     doDownloadMetadata(consumer, checkLastModified);
                 }
                 catch (IOException e) {
-                    logger.debug(e);
+                    LOG.debug(e);
                 }
             }
         });

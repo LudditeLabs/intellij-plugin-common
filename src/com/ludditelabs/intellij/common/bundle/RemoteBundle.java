@@ -24,7 +24,7 @@ import java.net.URISyntaxException;
  * </ul>
  */
 public class RemoteBundle extends Bundle {
-    protected static final Logger logger = Logger.getInstance("ludditelabs.bundle");
+    protected static final Logger LOG = Logger.getInstance("ludditelabs.bundle");
 
     private String m_arch = "64bit";
     private String m_baseUrl;
@@ -48,7 +48,7 @@ public class RemoteBundle extends Bundle {
             m_metadataUrl = uri.resolve(filename).toString();
         }
         catch (URISyntaxException e) {
-            logger.error(e);
+            LOG.error(e);
         }
     }
 

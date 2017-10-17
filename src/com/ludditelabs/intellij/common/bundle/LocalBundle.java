@@ -20,7 +20,7 @@ import java.nio.file.Paths;
  * </ul>
  */
 public class LocalBundle extends Bundle {
-    protected static final Logger logger = Logger.getInstance("ludditelabs.bundle");
+    protected static final Logger LOG = Logger.getInstance("ludditelabs.bundle");
 
     private String m_bundlePath;
     private String m_exePath;
@@ -67,11 +67,10 @@ public class LocalBundle extends Bundle {
             meta = gson.fromJson(reader, BundleMetadata.class);
         }
         catch (JsonSyntaxException e) {
-            logger.error(e);
+            LOG.error(e);
         }
         catch (FileNotFoundException e) {
-            logger.debug(String.format(
-                "Can't find platform bundle metadata %s", path));
+            LOG.debug(String.format("Can't find platform bundle metadata %s", path));
         }
 
         return meta;

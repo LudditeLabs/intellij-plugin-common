@@ -22,7 +22,7 @@ import java.util.zip.ZipFile;
  * This class provides methods to extract ZIP archives.
  */
 public class ZipUtils {
-    private static final Logger logger = Logger.getInstance(ZipUtils.class);
+    private static final Logger LOG = Logger.getInstance(ZipUtils.class);
 
     /**
      * Helper method to cleanup entry path.
@@ -64,7 +64,7 @@ public class ZipUtils {
 
         // Copy content to file.
         if (!entry.isDirectory()) {
-            logger.debug("Extracting " + entry_path);
+            LOG.debug("Extracting " + entry_path);
             if (indicator != null)
                 indicator.setText("Extracting " + entry_path + "...");
 
