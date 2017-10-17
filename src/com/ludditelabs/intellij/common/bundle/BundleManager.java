@@ -1,6 +1,8 @@
 package com.ludditelabs.intellij.common.bundle;
 
 import com.intellij.notification.*;
+import com.intellij.openapi.project.Project;
+import com.intellij.ui.AppUIUtil;
 import com.intellij.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -76,14 +78,17 @@ public class BundleManager extends Updater {
 
     private NotificationGroup m_releaseGroup;
     private NotificationGroup m_infoGroup;
+    private NotificationGroup m_errorGroup;
     private Notification m_notification = null;
 
     @NotNull private String m_bundleName = "bundle";
+    @NotNull private String m_unsupportedPlatformText = "This platform is not supported!";
     @NotNull private String m_firstDownloadText = "You need to download Platform Bundle.";
     @NotNull private String m_newVersionText = "New version is available!";
     @NotNull private String m_afterUpdateText = "Platform Bundle is updated.";
     @NotNull private String m_afterFirstDownloadText = "Platform Bundle is installed.";
     @NotNull private String m_infoDialogTitle = "Platform Bundle Update";
+    @NotNull private PlatformChecker m_platformChecker = new PlatformChecker();
 
     /**
      * Construct manager.
@@ -104,6 +109,12 @@ public class BundleManager extends Updater {
         m_infoGroup = new NotificationGroup(
             m_bundleName + " Bundle",
             NotificationDisplayType.BALLOON, true);
+
+        m_errorGroup = new NotificationGroup(
+            m_bundleName + " Error",
+            NotificationDisplayType.STICKY_BALLOON,
+            true
+        );
     }
 
     // Updater API
@@ -117,6 +128,14 @@ public class BundleManager extends Updater {
     }
 
     // Display text
+
+    /**
+     * Set text to display in the notification if platform is not supported.
+     * @param text Text to display.
+     */
+    public void setUnsupportedPlatformText(@NotNull String text) {
+        m_unsupportedPlatformText = text;
+    }
 
     /**
      * Set text to display in the notification if no bundle is installed yet.
@@ -184,7 +203,8 @@ public class BundleManager extends Updater {
         }
     }
 
-    private void showNewVersionNotification(final BundleMetadata metadata) {
+    private void showNewVersionNotification(@Nullable final Project project,
+                                            final BundleMetadata metadata) {
         String html = "<html>" + m_newVersionText + "<br/>" +
             "Click <a href='#'>here</a> for more info.<br/><html>";
 
@@ -196,25 +216,58 @@ public class BundleManager extends Updater {
                     showNewVersionDialog(metadata);
                 }
             });
-        Notifications.Bus.notify(n);
+        Notifications.Bus.notify(n, project);
     }
 
     /**
      * Show download notification if no bundle is installed yet.
      */
-    public void showFirstDownloadNotification() {
-        String html = "<html>" + m_firstDownloadText
-            + "<br/>Click <a href='#'>here</a> to download.</html>";
+    public void showFirstDownloadNotification(@Nullable final Project project) {
+        AppUIUtil.invokeOnEdt(new Runnable() {
+            @Override
+            public void run() {
+                String html = "<html>" + m_firstDownloadText
+                    + "<br/>Click <a href='#'>here</a> to download.</html>";
 
-        // Download bundle on click and show final message.
-        m_notification = m_releaseGroup.createNotification(
-            m_bundleName, html, NotificationType.INFORMATION, new NotificationListener.Adapter() {
-                @Override
-                protected void hyperlinkActivated(@NotNull Notification notification, @NotNull HyperlinkEvent e) {
-                    download();
-                }
-            });
-        Notifications.Bus.notify(m_notification);
+                // Download bundle on click and show final message.
+                m_notification = m_releaseGroup.createNotification(
+                    m_bundleName, html, NotificationType.INFORMATION, new NotificationListener.Adapter() {
+                        @Override
+                        protected void hyperlinkActivated(@NotNull Notification notification, @NotNull HyperlinkEvent e) {
+                            download();
+                        }
+                    });
+                Notifications.Bus.notify(m_notification, project);
+            }
+        });
+    }
+
+    /**
+     * Show notification if platform is not supported.
+     */
+    public void showUnsupportedPlatformNotification(final Project project) {
+        AppUIUtil.invokeOnEdt(new Runnable() {
+            @Override
+            public void run() {
+                String html = "<html>" + m_unsupportedPlatformText + "</html>";
+                showErrorNotification(m_bundleName, html, project, null);
+            }
+        });
+    }
+
+    public Notification createErrorNotification(@NotNull final String title,
+                                                @NotNull final String content,
+                                                @Nullable NotificationListener listener) {
+        return m_errorGroup.createNotification(
+            title, content, NotificationType.ERROR, listener);
+    }
+
+    public void showErrorNotification(@NotNull final String title,
+                                      @NotNull final String content,
+                                      @Nullable Project project,
+                                      @Nullable NotificationListener listener) {
+        Notification n = createErrorNotification(title, content, listener);
+        Notifications.Bus.notify(n, project);
     }
 
     /**
@@ -258,13 +311,25 @@ public class BundleManager extends Updater {
      * This method downloads remote bundle metadata and checks if it's newer
      * than local bundle. And shows install dialog if so.
      */
-    public void checkUpdateSilent() {
+    public void checkUpdateSilent(@Nullable final Project project) {
         downloadMetadata(new Consumer<BundleMetadata>() {
             @Override
             public void consume(final BundleMetadata metadata) {
                 if (metadata.isNewerThan(getLocalBundle().getMetadata()))
-                    showNewVersionNotification(metadata);
+                    showNewVersionNotification(project, metadata);
             }
         }, true, true);
+    }
+
+    // TODO: improve me if possible.
+    /**
+     * Return true if platform is supported.
+     */
+    public boolean isPlatformSupported() {
+        return m_platformChecker.isSupported();
+    }
+
+    public void setPlatformSupported(boolean state) {
+        m_platformChecker.setSupported(state);
     }
 }
