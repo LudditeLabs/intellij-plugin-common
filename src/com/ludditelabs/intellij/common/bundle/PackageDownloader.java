@@ -59,7 +59,7 @@ public class PackageDownloader {
         }
 
         if (m_indicator != null)
-            m_indicator.setText("Downloading platform bundle (${length})");
+            m_indicator.setText("Downloading platform bundle");
 
         final File file = getTempFilename();
         final String filename = file.getAbsolutePath();
@@ -67,7 +67,10 @@ public class PackageDownloader {
         LOG.debug("Downloading ", url, " -> ",filename);
 
         DownloadUtils.downloadToFile(
-            url, file, m_indicator, "Can't download file");
+            url, file, m_indicator,
+            true,
+            "Can't download file",
+            null);
 
         return filename;
     }

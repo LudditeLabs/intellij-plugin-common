@@ -84,7 +84,8 @@ public class MetadataDownloader {
             };
 
             String str = DownloadUtils.downloadToString(
-                url, m_indicator, "Can't download version info", processor);
+                url, m_indicator, false,
+                "Can't download version info", processor);
 
             BundleMetadata meta =  getMeta(str, last_modified.get());
             if (!meta.isValid())

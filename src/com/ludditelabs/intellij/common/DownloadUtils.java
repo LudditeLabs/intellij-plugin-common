@@ -31,27 +31,24 @@ public class DownloadUtils {
     }
 
     // size in bytes.
-    private static void replaceSize(@Nullable final ProgressIndicator indicator,
+    private static void setProgress(@Nullable final ProgressIndicator indicator,
                                     @Nullable String text, int size) {
         if (indicator != null && text != null) {
-            String placeholder = "${length}";
-            int i = text.indexOf(placeholder);
-            if (i != -1) {
-                String txt = text.substring(0, i) + sizeToString(size)
-                    + text.substring(i + placeholder.length());
-                indicator.setText(txt);
-            }
+            String txt = text + " (" + sizeToString(size) + ")";
+            indicator.setText(txt);
         }
     }
 
     public static void download(@NotNull String url,
                                 @NotNull final OutputStream output,
                                 @Nullable final ProgressIndicator indicator,
+                                final boolean addProgress,
                                 @Nullable final String errorMessage,
                                 @Nullable final HttpRequests.RequestProcessor<Void> extraProcessor) throws IOException {
 
         final String progress_text = indicator != null ? indicator.getText() : null;
-        replaceSize(indicator, progress_text, -1);
+        if (addProgress)
+            setProgress(indicator, progress_text, 0);
 
         if (indicator != null) {
             try {
@@ -70,7 +67,8 @@ public class DownloadUtils {
                 public Void process(@NotNull HttpRequests.Request request) throws IOException {
                     try {
                         int sz = request.getConnection().getContentLength();
-                        replaceSize(indicator, progress_text, sz);
+                        if (addProgress)
+                            setProgress(indicator, progress_text, sz);
                         NetUtils.copyStreamContent(indicator, request.getInputStream(), output, sz);
                         if (extraProcessor != null)
                             extraProcessor.process(request);
@@ -89,41 +87,23 @@ public class DownloadUtils {
             });
     }
 
-    public static void download(@NotNull String url,
-                                @NotNull final OutputStream output,
-                                @Nullable final ProgressIndicator indicator,
-                                @Nullable final String errorMessage) throws IOException {
-        download(url, output, indicator, errorMessage, null);
-    }
-
     public static String downloadToString(@NotNull String url,
                                           @Nullable final ProgressIndicator indicator,
+                                          final boolean addProgress,
                                           @Nullable final String errorMessage,
                                           @Nullable final HttpRequests.RequestProcessor<Void> extraProcessor) throws IOException {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        download(url, out, indicator, errorMessage, extraProcessor);
+        download(url, out, indicator, addProgress, errorMessage, extraProcessor);
         return out.toString();
     }
 
-    public static String downloadToString(@NotNull String url,
-                                          @Nullable final ProgressIndicator indicator,
-                                          @Nullable final String errorMessage) throws IOException {
-        return downloadToString(url, indicator, errorMessage, null);
-    }
-
     public static void downloadToFile(@NotNull String url,
                                       @NotNull File outFile,
                                       @Nullable final ProgressIndicator indicator,
+                                      final boolean addProgress,
                                       @Nullable final String errorMessage,
                                       @Nullable final HttpRequests.RequestProcessor<Void> extraProcessor) throws IOException {
         final FileOutputStream out = new FileOutputStream(outFile);
-        download(url, out, indicator, errorMessage, extraProcessor);
-    }
-
-    public static void downloadToFile(@NotNull String url,
-                                      @NotNull File outFile,
-                                      @Nullable final ProgressIndicator indicator,
-                                      @Nullable final String errorMessage) throws IOException {
-        downloadToFile(url, outFile, indicator, errorMessage, null);
+        download(url, out, indicator, addProgress, errorMessage, extraProcessor);
     }
 }
