@@ -43,14 +43,13 @@ public class DownloadUtils {
                                 @NotNull final OutputStream output,
                                 @Nullable final ProgressIndicator indicator,
                                 final boolean addProgress,
+                                final boolean showDownloadingFile,
                                 @Nullable final String errorMessage,
                                 @Nullable final HttpRequests.RequestProcessor<Void> extraProcessor) throws IOException {
 
         final String progress_text = indicator != null ? indicator.getText() : null;
-        if (addProgress)
-            setProgress(indicator, progress_text, 0);
 
-        if (indicator != null) {
+        if (showDownloadingFile && indicator != null) {
             try {
                 String[] parts = URI.create(url).getPath().split("/");
                 if (parts.length > 0)
@@ -85,6 +84,15 @@ public class DownloadUtils {
                     return null;
                 }
             });
+    }
+
+    public static void download(@NotNull String url,
+                                @NotNull final OutputStream output,
+                                @Nullable final ProgressIndicator indicator,
+                                final boolean addProgress,
+                                @Nullable final String errorMessage,
+                                @Nullable final HttpRequests.RequestProcessor<Void> extraProcessor) throws IOException {
+        download(url, output, indicator, addProgress, false, errorMessage, extraProcessor);
     }
 
     public static String downloadToString(@NotNull String url,
