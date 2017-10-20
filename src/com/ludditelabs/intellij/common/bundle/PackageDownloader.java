@@ -81,7 +81,10 @@ public class PackageDownloader {
 
         LOG.debug("Unpacking ", fileName, " -> ", outPath);
 
-        ZipUtils.unzipAtomic(zip_file, out_dir, m_indicator);
+        if (m_indicator != null)
+            m_indicator.setText("Unpacking platform bundle");
+
+        ZipUtils.unzipAtomic(zip_file, out_dir, m_indicator, false);
 
         File meta_file = Paths.get(outPath, "metadata.json").toFile();
         LOG.debug("Saving ", meta_file.getAbsolutePath());

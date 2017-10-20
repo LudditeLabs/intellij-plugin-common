@@ -48,12 +48,14 @@ public class ZipUtils {
      * @param entryStream Zip entry stream.
      * @param destDir Destination directory.
      * @param indicator IDE progress indicator.
+     * @param showFile Show filename in progress UI.
      * @throws IOException on I/O errors.
      */
     private static void unzipEntry(@NotNull ZipEntry entry,
                                    @NotNull InputStream entryStream,
                                    @NotNull File destDir,
-                                   @Nullable ProgressIndicator indicator) throws IOException {
+                                   @Nullable ProgressIndicator indicator,
+                                   boolean showFile) throws IOException {
         String entry_path = getPath(entry);
         File child = new File(destDir, entry_path);
         File dir = entry.isDirectory() ? child : child.getParentFile();
@@ -65,7 +67,7 @@ public class ZipUtils {
         // Copy content to file.
         if (!entry.isDirectory()) {
             LOG.debug("Extracting " + entry_path);
-            if (indicator != null)
+            if (indicator != null && showFile)
                 indicator.setText("Extracting " + entry_path + "...");
 
             try (FileOutputStream out = new FileOutputStream(child)) {
@@ -105,15 +107,17 @@ public class ZipUtils {
      * @param indicator IDE progress indicator.
      * @param dropDest Delete destination before unzip if exists.
      * @param unwrapSingleDir Unwrap content of a single directory.
+     * @param showFile Show filename in progress UI.
      * @throws IOException on I/O errors.
      *
-     * @see ZipUtils#unzip(File, File, ProgressIndicator)
+     * @see ZipUtils#unzip(File, File, ProgressIndicator, boolean)
      */
     public static void unzip(@NotNull File zipFile,
                              @NotNull File destDir,
                              @Nullable ProgressIndicator indicator,
                              boolean dropDest,
-                             boolean unwrapSingleDir) throws IOException {
+                             boolean unwrapSingleDir,
+                             boolean showFile) throws IOException {
         if (dropDest && destDir.exists())
             FileUtil.delete(destDir);
 
@@ -122,7 +126,7 @@ public class ZipUtils {
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
                 try (InputStream stream = zip_file.getInputStream(entry)) {
-                    unzipEntry(entry, stream, destDir, indicator);
+                    unzipEntry(entry, stream, destDir, indicator, showFile);
                 }
             }
         }
@@ -140,14 +144,16 @@ public class ZipUtils {
      * @param zipFile Archive to unzip.
      * @param destDir Destination directory.
      * @param indicator IDE progress indicator.
+     * @param showFile Show filename in progress UI.
      * @throws IOException on I/O errors.
      *
      * @see ZipUtils#unzip(File, File, ProgressIndicator, boolean, boolean)
      */
     public static void unzip(@NotNull File zipFile,
                              @NotNull File destDir,
-                             @Nullable ProgressIndicator indicator) throws IOException {
-        unzip(zipFile, destDir, indicator, true, true);
+                             @Nullable ProgressIndicator indicator,
+                             boolean showFile) throws IOException {
+        unzip(zipFile, destDir, indicator, true, true, showFile);
     }
 
     /**
@@ -156,13 +162,15 @@ public class ZipUtils {
      * @param zipFile Archive to unzip.
      * @param destDir Destination directory.
      * @param indicator IDE progress indicator.
+     * @param showFile Show filename in progress UI.
      * @throws IOException on I/O errors.
      *
      * @see ZipUtils#unzip(File, File, ProgressIndicator)
      */
     public static void unzipAtomic(@NotNull File zipFile,
                                    @NotNull File destDir,
-                                   @Nullable ProgressIndicator indicator) throws IOException {
+                                   @Nullable ProgressIndicator indicator,
+                                   boolean showFile) throws IOException {
         File dest_dir = destDir;
         boolean need_replace = false;
 
@@ -177,7 +185,7 @@ public class ZipUtils {
             dest_dir = new File(destDir.getAbsolutePath() + ".new");
         }
 
-        unzip(zipFile, dest_dir, indicator);
+        unzip(zipFile, dest_dir, indicator, showFile);
 
         if (need_replace) {
             Path orig_path = destDir.toPath();
