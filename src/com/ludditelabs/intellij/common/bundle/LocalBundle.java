@@ -3,7 +3,7 @@ package com.ludditelabs.intellij.common.bundle;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.util.SystemInfo;
+import com.ludditelabs.intellij.common.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -48,10 +48,7 @@ public class LocalBundle extends Bundle {
     // Construct paths and load metadata.
     private void setup(String rootPath, String bundleDir, String exeName) {
         m_bundlePath = getPath(rootPath, bundleDir);
-
-        String ext = SystemInfo.isWindows ? ".exe" : ".bin";
-        m_exePath = getPath(m_bundlePath, exeName + ext);
-
+        m_exePath = Utils.exeFilename(getPath(m_bundlePath, exeName));
         reloadMetadata();
     }
 

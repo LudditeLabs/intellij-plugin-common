@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class Utils {
@@ -114,5 +115,13 @@ public class Utils {
             }
         }
         return out;
+    }
+
+    @NotNull
+    public static String exeFilename(@NotNull final String filename) {
+        String ext = SystemInfo.isWindows ? ".exe" : "";
+        if (!filename.endsWith(ext))
+            return filename + ext;
+        return filename;
     }
 }
